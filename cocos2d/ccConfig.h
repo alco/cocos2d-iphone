@@ -72,7 +72,7 @@
  
  To enable set it to a value different than 0. Enabled by default.
  */
-#define CC_DIRECTOR_FAST_FPS	1
+#define CC_DIRECTOR_FAST_FPS	0
 
 /** @def CC_DIRECTOR_FPS_INTERVAL
  Senconds between FPS updates.
