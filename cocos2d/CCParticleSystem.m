@@ -72,6 +72,8 @@
 @synthesize emissionRate;
 @synthesize totalParticles;
 @synthesize startSize, startSizeVar;
+@synthesize middleSize, middleSizeVar;
+@synthesize middleSizeTimeOffset;
 @synthesize endSize, endSizeVar;
 @synthesize blendFunc = blendFunc_;
 @synthesize positionType = positionType_;
@@ -307,6 +309,7 @@
 		// udpate after action in run!
 		[self scheduleUpdateWithPriority:1];
 		
+		middleSize = -1;
 	}
 
 	return self;
@@ -383,7 +386,21 @@
 		float endS = endSize + endSizeVar * CCRANDOM_MINUS1_1();
 		endS = MAX(0, endS);	// No negative values
 		endS *= CC_CONTENT_SCALE_FACTOR();
-		particle->deltaSize = (endS - startS) / particle->timeToLive;
+
+		if (middleSize >= 0.f && middleSizeTimeOffset > 0) {
+			float midS = middleSize + middleSizeVar * CCRANDOM_MINUS1_1();
+			midS = MAX(0, midS);
+			midS *= CC_CONTENT_SCALE_FACTOR();
+
+			float time_before_mid = particle->timeToLive * middleSizeTimeOffset;
+			float time_after_mid = particle->timeToLive - time_before_mid;
+			particle->deltaSize2 = (midS - startS) / time_before_mid;
+			particle->deltaSize = (endS - midS) / time_after_mid;
+			particle->midSizeTimeOffset = particle->timeToLive - time_before_mid;
+		} else {
+			particle->deltaSize = (endS - startS) / particle->timeToLive;
+			particle->deltaSize2 = -1;
+		}
 	}
 	
 	// rotation
@@ -555,7 +572,10 @@
 			p->color.a += (p->deltaColor.a * dt);
 			
 			// size
-			p->size += (p->deltaSize * dt);
+			if (p->deltaSize2 > 0 && p->timeToLive > p->midSizeTimeOffset)
+				p->size += (p->deltaSize2 * dt);
+			else
+				p->size += (p->deltaSize * dt);
 			p->size = MAX( 0, p->size );
 			
 			// angle

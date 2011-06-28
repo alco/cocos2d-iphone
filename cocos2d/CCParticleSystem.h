@@ -94,6 +94,8 @@ typedef struct sCCParticle {
 
 	float		size;
 	float		deltaSize;
+	float		deltaSize2;
+	float		midSizeTimeOffset;
 
 	float		rotation;
 	float		deltaRotation;
@@ -232,6 +234,12 @@ typedef void (*CC_UPDATE_PARTICLE_IMP)(id, SEL, tCCParticle*, CGPoint);
 	float startSize;
 	// start Size variance
 	float startSizeVar;
+	// Middle size of the particle
+	float middleSize;
+	// Middle size variance
+	float middleSizeVar;
+	// moment in time at which middle size is reached
+	float middleSizeTimeOffset;
 	// End size of the particle
 	float endSize;
 	// end size of variance
@@ -350,6 +358,12 @@ typedef void (*CC_UPDATE_PARTICLE_IMP)(id, SEL, tCCParticle*, CGPoint);
 @property (nonatomic,readwrite,assign) float startSize;
 /** size variance in pixels of each particle */
 @property (nonatomic,readwrite,assign) float startSizeVar;
+
+@property (nonatomic,readwrite,assign) float middleSize;
+@property (nonatomic,readwrite,assign) float middleSizeVar;
+/** moment in time at which middle size is reached **/
+@property (nonatomic,readwrite,assign) float middleSizeTimeOffset;
+
 /** end size in pixels of each particle */
 @property (nonatomic,readwrite,assign) float endSize;
 /** end size variance in pixels of each particle */
