@@ -316,11 +316,11 @@ typedef struct _KerningHashElement
 	
 	// scaleW. sanity check
 	propertyValue = [nse nextObject];	
-	NSAssert( [propertyValue intValue] <= [[CCConfiguration sharedConfiguration] maxTextureSize], @"CCLabelBMFont: page can't be larger than supported");
+	NSAssert( [propertyValue intValue]/* / 2*/ <= [[CCConfiguration sharedConfiguration] maxTextureSize], @"CCLabelBMFont: page can't be larger than supported");
 	
 	// scaleH. sanity check
 	propertyValue = [nse nextObject];
-	NSAssert( [propertyValue intValue] <= [[CCConfiguration sharedConfiguration] maxTextureSize], @"CCLabelBMFont: page can't be larger than supported");
+	NSAssert( [propertyValue intValue]/* / 2*/ <= [[CCConfiguration sharedConfiguration] maxTextureSize], @"CCLabelBMFont: page can't be larger than supported");
 	
 	// pages. sanity check
 	propertyValue = [nse nextObject];
@@ -346,25 +346,25 @@ typedef struct _KerningHashElement
 
 	// Character x
 	propertyValue = [nse nextObject];
-	characterDefinition->rect.origin.x = [propertyValue intValue];
+	characterDefinition->rect.origin.x = /*(float)*/[propertyValue intValue];// / 2;
 	// Character y
 	propertyValue = [nse nextObject];
-	characterDefinition->rect.origin.y = [propertyValue intValue];
+	characterDefinition->rect.origin.y = /*(float)*/[propertyValue intValue];// / 2;
 	// Character width
 	propertyValue = [nse nextObject];
-	characterDefinition->rect.size.width = [propertyValue intValue];
+	characterDefinition->rect.size.width = /*(float)*/[propertyValue intValue];// / 2;
 	// Character height
 	propertyValue = [nse nextObject];
-	characterDefinition->rect.size.height = [propertyValue intValue];
+	characterDefinition->rect.size.height = /*(float)*/[propertyValue intValue];// / 2;
 	// Character xoffset
 	propertyValue = [nse nextObject];
-	characterDefinition->xOffset = [propertyValue intValue];
+	characterDefinition->xOffset = /*(float)*/[propertyValue intValue];// / 2;
 	// Character yoffset
 	propertyValue = [nse nextObject];
-	characterDefinition->yOffset = [propertyValue intValue];
+	characterDefinition->yOffset = /*(float)*/[propertyValue intValue];// / 2;
 	// Character xadvance
 	propertyValue = [nse nextObject];
-	characterDefinition->xAdvance = [propertyValue intValue];
+	characterDefinition->xAdvance = /*(float)*/[propertyValue intValue];// / 2;
 }
 
 -(void) parseKerningCapacity:(NSString*) line
