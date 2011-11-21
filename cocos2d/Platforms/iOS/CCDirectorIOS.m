@@ -697,7 +697,8 @@ CGFloat	__ccContentScaleFactor = 1;
 
 - (void) startAnimation
 {
-	NSAssert( displayLink == nil, @"displayLink must be nil. Calling startAnimation twice?");
+	//NSAssert( displayLink == nil, @"displayLink must be nil. Calling startAnimation twice?");
+    if (displayLink) return;
 
 	if ( gettimeofday( &lastUpdate_, NULL) != 0 ) {
 		CCLOG(@"cocos2d: DisplayLinkDirector: Error on gettimeofday");
