@@ -606,7 +606,7 @@ struct transformValues_ {
 		glBlendFunc( blendFunc_.src, blendFunc_.dst );
 
 #define kQuadSize sizeof(quad_.bl)
-	glBindTexture(GL_TEXTURE_2D, [texture_ name]);
+    [[CCDirector sharedDirector] bindTexture:[texture_ name]];
 	
 	long offset = (long)&quad_;
 	

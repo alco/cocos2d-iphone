@@ -518,7 +518,7 @@ const char kProgressTextureCoords = 0x1e;
 	///	========================================================================
 	//	Replaced [texture_ drawAtPoint:CGPointZero] with my own vertexData
 	//	Everything above me and below me is copied from CCTextureNode's draw
-	glBindTexture(GL_TEXTURE_2D, sprite_.texture.name);
+    [[CCDirector sharedDirector] bindTexture:sprite_.texture.name];
 	glVertexPointer(2, GL_FLOAT, sizeof(ccV2F_C4B_T2F), &vertexData_[0].vertices);
 	glTexCoordPointer(2, GL_FLOAT, sizeof(ccV2F_C4B_T2F), &vertexData_[0].texCoords);
 	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(ccV2F_C4B_T2F), &vertexData_[0].colors);

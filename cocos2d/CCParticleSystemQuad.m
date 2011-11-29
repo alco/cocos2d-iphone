@@ -270,7 +270,7 @@
 	// Needed states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
 	// Unneeded states: -
 
-	glBindTexture(GL_TEXTURE_2D, [texture_ name]);
+	[[CCDirector sharedDirector] bindTexture:[texture_ name]];
 
 #define kQuadSize sizeof(quads_[0].bl)
 

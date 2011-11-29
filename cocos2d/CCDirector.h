@@ -187,7 +187,8 @@ and when to execute the Scenes.
 /** returns a shared instance of the director */
 +(CCDirector *)sharedDirector;
 
-
+- (void)resetTexture;
+- (void)bindTexture:(GLuint)tex_name;
 
 // Window size
 

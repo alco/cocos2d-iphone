@@ -86,6 +86,23 @@ extern NSString * cocos2dVersion(void);
 @synthesize runningThread = runningThread_;
 @synthesize notificationNode = notificationNode_;
 @synthesize projectionDelegate = projectionDelegate_;
+
+
+static GLuint _tex_name;
+
+- (void)resetTexture
+{
+    _tex_name = 0;
+}
+
+- (void)bindTexture:(GLuint)tex_name
+{
+    if (tex_name != _tex_name) {
+        _tex_name = tex_name;
+        glBindTexture(GL_TEXTURE_2D, tex_name);
+    }
+}
+
 //
 // singleton stuff
 //
