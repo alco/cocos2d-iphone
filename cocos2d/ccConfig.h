@@ -140,6 +140,8 @@
 #define CC_USES_VBO 0
 #endif
 
+#define CC_PARTICLE_USES_VBO 0
+
 /** @def CC_NODE_TRANSFORM_USING_AFFINE_MATRIX
  If enabled, CCNode will transform the nodes using a cached Affine matrix.
  If disabled, the node will be transformed using glTranslate,glRotate,glScale.

@@ -74,7 +74,7 @@
 		[self initTexCoordsWithRect:CGRectMake(0, 0, [texture_ pixelsWide], [texture_ pixelsHigh])];
 		[self initIndices];
 
-#if CC_USES_VBO
+#if CC_PARTICLE_USES_VBO
 		// create the VBO buffer
 		glGenBuffers(1, &quadsID_);
 		
@@ -92,7 +92,7 @@
 {
 	free(quads_);
 	free(indices_);
-#if CC_USES_VBO
+#if CC_PARTICLE_USES_VBO
 	glDeleteBuffers(1, &quadsID_);
 #endif
 	
@@ -256,7 +256,7 @@
 
 -(void) postStep
 {
-#if CC_USES_VBO
+#if CC_PARTICLE_USES_VBO
 	glBindBuffer(GL_ARRAY_BUFFER, quadsID_);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quads_[0])*particleCount, quads_);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -274,7 +274,7 @@
 
 #define kQuadSize sizeof(quads_[0].bl)
 
-#if CC_USES_VBO
+#if CC_PARTICLE_USES_VBO
 	glBindBuffer(GL_ARRAY_BUFFER, quadsID_);
 
 	glVertexPointer(2,GL_FLOAT, kQuadSize, 0);
@@ -298,7 +298,7 @@
 	diff = offsetof( ccV2F_C4B_T2F, texCoords);
 	glTexCoordPointer(2, GL_FLOAT, kQuadSize, (GLvoid*)(offset + diff));		
 
-#endif // ! CC_USES_VBO
+#endif // ! CC_PARTICLE_USES_VBO
 	
 	BOOL newBlend = blendFunc_.src != CC_BLEND_SRC || blendFunc_.dst != CC_BLEND_DST;
 	if( newBlend )
@@ -311,7 +311,7 @@
 	if( newBlend )
 		glBlendFunc( CC_BLEND_SRC, CC_BLEND_DST );
 
-#if CC_USES_VBO
+#if CC_PARTICLE_USES_VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 #endif
 
