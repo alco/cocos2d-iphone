@@ -26,9 +26,9 @@
 #import "CCProgressTimer.h"
 
 #import "ccMacros.h"
+#import "CCSpriteFrameCache.h"
 #import "CCTextureCache.h"
 #import "Support/CGPointExtension.h"
-
 
 
 #define kProgressTextureCoordsCount 4
@@ -54,8 +54,26 @@ const char kProgressTextureCoords = 0x1e;
 {
 	return [[[self alloc]initWithFile:filename] autorelease];
 }
+
+- (id)initWithSpriteFrame:(CCSpriteFrame *)spriteFrame
+{
+    if(( self = [super init] )){
+		self.sprite = [CCSprite spriteWithSpriteFrame:spriteFrame];
+		percentage_ = 0.f;
+		vertexData_ = NULL;
+		vertexDataCount_ = 0;
+		self.anchorPoint = ccp(.5f,.5f);
+		self.contentSize = sprite_.contentSize;
+		self.type = kCCProgressTimerTypeRadialCCW;
+	}
+	return self;
+}
+
 -(id)initWithFile:(NSString*) filename
 {
+    CCSpriteFrame *spriteFrame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:filename];
+    if (spriteFrame)
+        return [self initWithSpriteFrame:spriteFrame];
 	return [self initWithTexture:[[CCTextureCache sharedTextureCache] addImage: filename]];
 }
 
@@ -156,10 +174,10 @@ const char kProgressTextureCoords = 0x1e;
 	CGPoint tmp;
 	ccVertex2F ret;
 	if (sprite_.texture) {
-		CCTexture2D *texture = [sprite_ texture];
-		CGSize texSize = [texture contentSizeInPixels];
-		tmp = ccp(texSize.width * texCoord.x/texture.maxS,
-				   texSize.height * (1 - (texCoord.y/texture.maxT)));
+        CGSize texSize = sprite_.texture.contentSizeInPixels;
+        CGRect texRect = sprite_.textureRect;
+        tmp = ccp(texCoord.x * texSize.width - texRect.origin.x,
+                  texRect.size.height - (texCoord.y * texSize.height - texRect.origin.y));
 	} else
 		tmp = CGPointZero;
 	
@@ -380,7 +398,13 @@ const char kProgressTextureCoords = 0x1e;
 	
 	float alpha = percentage_ / 100.f;
 	
-	CGPoint tMax = ccp(sprite_.texture.maxS,sprite_.texture.maxT);
+    float texWidth = sprite_.texture.pixelsWide;
+    float texHeight = sprite_.texture.pixelsHigh;
+    CGRect texRect = sprite_.textureRect;
+
+    float u_origin = texRect.origin.x / texWidth;
+    float v_origin = texRect.origin.y / texHeight;
+	CGPoint tMax = ccp(texRect.size.width/texWidth, texRect.size.height/texHeight);
 	
 	unsigned char vIndexes[2] = {0,0};
 	unsigned char index = 0;
@@ -394,17 +418,17 @@ const char kProgressTextureCoords = 0x1e;
 		NSAssert( vertexData_, @"CCProgressTimer. Not enough memory");
 		
 		if(type_ == kCCProgressTimerTypeHorizontalBarLR){
-			vertexData_[vIndexes[0] = 0].texCoords = (ccTex2F){0,0};
-			vertexData_[vIndexes[1] = 1].texCoords = (ccTex2F){0, tMax.y};
+			vertexData_[vIndexes[0] = 0].texCoords = (ccTex2F){u_origin,v_origin};
+			vertexData_[vIndexes[1] = 1].texCoords = (ccTex2F){u_origin, v_origin+tMax.y};
 		}else if (type_ == kCCProgressTimerTypeHorizontalBarRL) {
-			vertexData_[vIndexes[0] = 2].texCoords = (ccTex2F){tMax.x, tMax.y};
-			vertexData_[vIndexes[1] = 3].texCoords = (ccTex2F){tMax.x, 0.f};
+			vertexData_[vIndexes[0] = 2].texCoords = (ccTex2F){u_origin+tMax.x, v_origin+tMax.y};
+			vertexData_[vIndexes[1] = 3].texCoords = (ccTex2F){u_origin+tMax.x, v_origin};
 		}else if (type_ == kCCProgressTimerTypeVerticalBarBT) {
-			vertexData_[vIndexes[0] = 1].texCoords = (ccTex2F){0, tMax.y};
-			vertexData_[vIndexes[1] = 3].texCoords = (ccTex2F){tMax.x, tMax.y};
+			vertexData_[vIndexes[0] = 1].texCoords = (ccTex2F){u_origin, v_origin+tMax.y};
+			vertexData_[vIndexes[1] = 3].texCoords = (ccTex2F){u_origin+tMax.x, v_origin+tMax.y};
 		}else if (type_ == kCCProgressTimerTypeVerticalBarTB) {
-			vertexData_[vIndexes[0] = 0].texCoords = (ccTex2F){0, 0};
-			vertexData_[vIndexes[1] = 2].texCoords = (ccTex2F){tMax.x, 0};
+			vertexData_[vIndexes[0] = 0].texCoords = (ccTex2F){u_origin, v_origin};
+			vertexData_[vIndexes[1] = 2].texCoords = (ccTex2F){u_origin+tMax.x, v_origin};
 		}
 		
 		index = vIndexes[0];
@@ -432,17 +456,17 @@ const char kProgressTextureCoords = 0x1e;
 	}
 	
 	if(type_ == kCCProgressTimerTypeHorizontalBarLR){
-		vertexData_[vIndexes[0] = 3].texCoords = (ccTex2F){tMax.x*alpha, tMax.y};
-		vertexData_[vIndexes[1] = 2].texCoords = (ccTex2F){tMax.x*alpha, 0};
+		vertexData_[vIndexes[0] = 3].texCoords = (ccTex2F){u_origin+tMax.x*alpha, v_origin+tMax.y};
+		vertexData_[vIndexes[1] = 2].texCoords = (ccTex2F){u_origin+tMax.x*alpha, v_origin};
 	}else if (type_ == kCCProgressTimerTypeHorizontalBarRL) {
-		vertexData_[vIndexes[0] = 1].texCoords = (ccTex2F){tMax.x*(1.f - alpha), 0};
-		vertexData_[vIndexes[1] = 0].texCoords = (ccTex2F){tMax.x*(1.f - alpha), tMax.y};
+		vertexData_[vIndexes[0] = 1].texCoords = (ccTex2F){u_origin+tMax.x*(1.f - alpha), v_origin};
+		vertexData_[vIndexes[1] = 0].texCoords = (ccTex2F){u_origin+tMax.x*(1.f - alpha), v_origin+tMax.y};
 	}else if (type_ == kCCProgressTimerTypeVerticalBarBT) {
-		vertexData_[vIndexes[0] = 0].texCoords = (ccTex2F){0, tMax.y*(1.f - alpha)};
-		vertexData_[vIndexes[1] = 2].texCoords = (ccTex2F){tMax.x, tMax.y*(1.f - alpha)};
+		vertexData_[vIndexes[0] = 0].texCoords = (ccTex2F){u_origin, v_origin+tMax.y*(1.f - alpha)};
+		vertexData_[vIndexes[1] = 2].texCoords = (ccTex2F){u_origin+tMax.x, v_origin+tMax.y*(1.f - alpha)};
 	}else if (type_ == kCCProgressTimerTypeVerticalBarTB) {
-		vertexData_[vIndexes[0] = 1].texCoords = (ccTex2F){0, tMax.y*alpha};
-		vertexData_[vIndexes[1] = 3].texCoords = (ccTex2F){tMax.x, tMax.y*alpha};
+		vertexData_[vIndexes[0] = 1].texCoords = (ccTex2F){u_origin, v_origin+tMax.y*alpha};
+		vertexData_[vIndexes[1] = 3].texCoords = (ccTex2F){u_origin+tMax.x, v_origin+tMax.y*alpha};
 	}
 	
 	index = vIndexes[0];
