@@ -43,13 +43,18 @@
 
 @implementation CCParticleSystemQuad
 
+- (void)setHeightToWidthRatio:(float)ratio
+{
+    h_w_ratio_ = ratio;
+}
 
 // overriding the init method
 -(id) initWithTotalParticles:(NSUInteger) numberOfParticles
 {
 	// base initialization
 	if( (self=[super initWithTotalParticles:numberOfParticles]) ) {
-	
+        h_w_ratio_ = 1;
+
 		// allocating data space
 		quads_ = calloc( sizeof(quads_[0]) * totalParticles, 1 );
 		indices_ = calloc( sizeof(indices_[0]) * totalParticles * 6, 1 );
@@ -155,12 +160,14 @@
 
 -(void) setDisplayFrame:(CCSpriteFrame *)spriteFrame
 {
+    [self setTexture: spriteFrame.texture withRect:spriteFrame.rect];
+    [self setHeightToWidthRatio:spriteFrame.rect.size.height/spriteFrame.rect.size.width];
+    size_ = spriteFrame.rect.size.width;
+}
 
-	NSAssert( CGPointEqualToPoint( spriteFrame.offsetInPixels , CGPointZero ), @"QuadParticle only supports SpriteFrames with no offsets");
-
-	// update texture before updating texture rect
-	if ( spriteFrame.texture.name != texture_.name )
-		[self setTexture: spriteFrame.texture];	
+- (float)size
+{
+    return size_;
 }
 
 -(void) initIndices
@@ -190,13 +197,14 @@
 	quad->tr.colors = color;
 	
 	// vertices
-	GLfloat size_2 = p->size/2;
+	GLfloat width_2 = p->size/2;
+    GLfloat height_2 = p->size*h_w_ratio_/2;
 	if( p->rotation ) {
-		GLfloat x1 = -size_2;
-		GLfloat y1 = -size_2;
+		GLfloat x1 = -width_2;
+		GLfloat y1 = -height_2;
 		
-		GLfloat x2 = size_2;
-		GLfloat y2 = size_2;
+		GLfloat x2 = width_2;
+		GLfloat y2 = height_2;
 		GLfloat x = newPos.x;
 		GLfloat y = newPos.y;
 		
@@ -229,20 +237,20 @@
 		quad->tr.vertices.y = cy;
 	} else {
 		// bottom-left vertex:
-		quad->bl.vertices.x = newPos.x - size_2;
-		quad->bl.vertices.y = newPos.y - size_2;
+		quad->bl.vertices.x = newPos.x - width_2;
+		quad->bl.vertices.y = newPos.y - height_2;
 		
 		// bottom-right vertex:
-		quad->br.vertices.x = newPos.x + size_2;
-		quad->br.vertices.y = newPos.y - size_2;
+		quad->br.vertices.x = newPos.x + width_2;
+		quad->br.vertices.y = newPos.y - height_2;
 		
 		// top-left vertex:
-		quad->tl.vertices.x = newPos.x - size_2;
-		quad->tl.vertices.y = newPos.y + size_2;
+		quad->tl.vertices.x = newPos.x - width_2;
+		quad->tl.vertices.y = newPos.y + height_2;
 		
 		// top-right vertex:
-		quad->tr.vertices.x = newPos.x + size_2;
-		quad->tr.vertices.y = newPos.y + size_2;				
+		quad->tr.vertices.x = newPos.x + width_2;
+		quad->tr.vertices.y = newPos.y + height_2;
 	}
 }
 

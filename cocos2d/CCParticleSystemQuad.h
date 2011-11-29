@@ -53,7 +53,11 @@
 #if CC_USES_VBO
 	GLuint				quadsID_;		// VBO id
 #endif
+    float h_w_ratio_;
+    float size_;
 }
+
+- (void)setHeightToWidthRatio:(float)ratio;
 
 /** initialices the indices for the vertices */
 -(void) initIndices;
@@ -66,7 +70,7 @@
  @since v0.99.4
  */
 -(void)setDisplayFrame:(CCSpriteFrame*)spriteFrame;
-
+- (float)size;
 /** Sets a new texture with a rect. The rect is in Points.
  @since v0.99.4
  */
