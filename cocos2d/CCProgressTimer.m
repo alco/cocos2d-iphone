@@ -175,7 +175,7 @@ const char kProgressTextureCoords = 0x1e;
 	ccVertex2F ret;
 	if (sprite_.texture) {
         CGSize texSize = sprite_.texture.contentSizeInPixels;
-        CGRect texRect = sprite_.textureRect;
+        CGRect texRect = CC_RECT_POINTS_TO_PIXELS(sprite_.textureRect);
         tmp = ccp(texCoord.x * texSize.width - texRect.origin.x,
                   texRect.size.height - (texCoord.y * texSize.height - texRect.origin.y));
 	} else
@@ -400,7 +400,7 @@ const char kProgressTextureCoords = 0x1e;
 	
     float texWidth = sprite_.texture.pixelsWide;
     float texHeight = sprite_.texture.pixelsHigh;
-    CGRect texRect = sprite_.textureRect;
+    CGRect texRect = CC_RECT_POINTS_TO_PIXELS(sprite_.textureRect);
 
     float u_origin = texRect.origin.x / texWidth;
     float v_origin = texRect.origin.y / texHeight;
