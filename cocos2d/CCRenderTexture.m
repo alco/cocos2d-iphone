@@ -228,27 +228,24 @@
 									colorSpaceRef, bitmapInfo, provider,
 									NULL, false,
 									kCGRenderingIntentDefault);
-	
-	CGContextRef context = CGBitmapContextCreate([pixels mutableBytes], tx,
-												 ty, CGImageGetBitsPerComponent(iref),
-												 CGImageGetBytesPerRow(iref), CGImageGetColorSpace(iref),
-												 bitmapInfo);
-	CGContextTranslateCTM(context, 0.0f, ty);
-	CGContextScaleCTM(context, 1.0f, -1.0f);
-	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, tx, ty), iref);
-	CGImageRef outputRef = CGBitmapContextCreateImage(context);
-	UIImage* image	= [[UIImage alloc] initWithCGImage:outputRef];
-	
+    CGColorSpaceRelease(colorSpaceRef);
+
+    CGSize size = [texture_ contentSize];
+    int ptx = size.width;
+    int pty = size.height;
+
+    UIGraphicsBeginImageContextWithOptions(size, YES, 0);
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, ptx, pty), iref);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
 	CGImageRelease(iref);
-	CGContextRelease(context);
-	CGColorSpaceRelease(colorSpaceRef);
 	CGDataProviderRelease(provider);
-	CGImageRelease(outputRef);
-	
+
 	[pixels release];
 	[buffer release];
-	
-	return [image autorelease];
+
+	return image;
 }
 
 -(NSData*)getUIImageAsDataFromBuffer:(int) format
