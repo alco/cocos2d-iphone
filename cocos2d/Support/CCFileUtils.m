@@ -130,6 +130,9 @@ NSString *ccRemoveHDSuffixFromFile( NSString *path )
 		NSString *retinaName = [pathWithoutExtension stringByAppendingString:CC_RETINA_DISPLAY_FILENAME_SUFFIX];
 		retinaName = [retinaName stringByAppendingPathExtension:extension];
 
+        if (![retinaName isAbsolutePath])
+            retinaName = [[NSBundle mainBundle] pathForResource:retinaName ofType:nil];
+
 		if( [__localFileManager fileExistsAtPath:retinaName] )
 			return retinaName;
 
