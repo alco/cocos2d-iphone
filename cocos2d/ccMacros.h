@@ -242,6 +242,8 @@ do {															\
 
 #else // retina disabled
 
+#import "Platforms/iOS/CCDirectorIOS.h"
+
 /*****************************/
 /** RETINA DISPLAY DISABLED **/
 /*****************************/
