@@ -254,8 +254,16 @@
 	}
 }
 
+#ifdef GFX_PARTICLE_SWITCH
+extern int g_particlesEnabled;
+#endif
+
 -(void) postStep
 {
+#ifdef GFX_PARTICLE_SWITCH
+    if (g_particlesEnabled == 0)
+        return;
+#endif
 #if CC_PARTICLE_USES_VBO
 	glBindBuffer(GL_ARRAY_BUFFER, quadsID_);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quads_[0])*particleCount, quads_);
@@ -265,7 +273,11 @@
 
 // overriding draw method
 -(void) draw
-{	
+{
+#ifdef GFX_PARTICLE_SWITCH
+    if (g_particlesEnabled == 0)
+        return;
+#endif
 	// Default GL states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
 	// Needed states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
 	// Unneeded states: -
