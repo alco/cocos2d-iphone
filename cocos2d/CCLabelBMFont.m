@@ -531,9 +531,18 @@ typedef struct _KerningHashElement
 	
 	totalHeight = configuration_->commonHeight_ * quantityOfLines;
 	nextFontPositionY = -(configuration_->commonHeight_ - configuration_->commonHeight_*quantityOfLines);
+
+    static unichar ru_a, ru_ya;
+    if (ru_a == 0) {
+        ru_a = [@"а" characterAtIndex:0];
+        ru_ya = [@"я" characterAtIndex:0];
+    }
 	
 	for(NSUInteger i=0; i<stringLen; i++) {
 		unichar c = [string_ characterAtIndex:i];
+        if (c >= ru_a && c <= ru_ya)
+            c = c - ru_a + 224;
+
 		NSAssert( c < kCCBMFontMaxChars, @"LabelBMFont: character outside bounds");
 		
 		if (c == '\n') {
